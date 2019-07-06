@@ -35,14 +35,23 @@ var seriesData = [];
   console.log("Props in grouped bar are" + JSON.stringify(props))
 seriesData=[];
   
-  
+// var stateAttType =[];
+
+// for(var k=0;k<props.graphData.bar_data.length;k++)
+// {
+//   var string ='attType'
+//   string = string.concat(k.toString)
+//   stateAttType.push({ {string} : '0'})
+// }
+// console.log(stateAttType)
 
   const classes = useStyles();
   const [values, setValues] = React.useState({
     statType: 'mean',
     attType : '0'
   });
-
+console.log("xxxxxx" + JSON.stringify(values))
+  // console.log(values)
   for(var k=0;k< props.graphData.bar_data.length;k++)
   {
     seriesData.push({
@@ -73,16 +82,16 @@ seriesData=[];
 
   }
 
-  function handleChanger(event) {
-    setValues(oldValues => ({
-      ...oldValues,
-      [event.target.name]: event.target.value,
-    }));
-    console.log("The frequency is " + event.target.name)
-    console.log("The frequency is " + event.target.value)
-    // window.clientQuery.frequency = event.target.value
+  // function handleChanger(event) {
+  //   setValues(oldValues => ({
+  //     ...oldValues,
+  //     [event.target.name]: event.target.value,
+  //   }));
+  //   console.log("The frequency is " + event.target.name)
+  //   console.log("The frequency is " + event.target.value)
+  //   // window.clientQuery.frequency = event.target.value
 
-  }
+  // }
       // console.log("size of labels is" + JSON.stringify(props.graphData.graphData.data[0].labels))
       // console.log("size of values is" + JSON.stringify(props.graphData.graphData.data[0].values[0].mean))
   const [state, setState] = React.useState({
@@ -222,6 +231,37 @@ seriesData=[];
    },[values.attType])
    
 
+
+
+  //  var attTypeArray =[]
+  //  for(var i =0;i<props.graphData.bar_data.length;i++)
+  //  { 
+  //    attTypeArray.push(
+  //     <form className={classes.root} autoComplete="off">
+      
+  //     <FormControl className={classes.formControl}>
+  //       <InputLabel htmlFor="attType[i]-helper">{props.comparisonLabels.sensorList_Array[i].label}</InputLabel>
+  //       <Select
+  //         value={values.attType[i]}
+  //         onChange={handleChange}
+  //         input={<Input name='nnnnnn' id="attType-helper" />}
+  //       >
+  //         {/* <MenuItem value="">
+  //           <em>Mean</em>
+  //         </MenuItem> */}
+  //         <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
+  //         <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
+  //         <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem>
+          
+          
+  //       </Select>
+  //       <FormHelperText>Select any Attribute</FormHelperText>
+  //     </FormControl>
+      
+
+  //        </form>
+  //    )
+  //  }
       
         return (
 
@@ -254,31 +294,35 @@ seriesData=[];
               
     
                  </form>
+                 {/* {attTypeArray} */}
 
 
                  <form className={classes.root} autoComplete="off">
       
-              <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="attType-helper">Attribute</InputLabel>
-                <Select
-                  value={values.attType}
-                  onChange={handleChanger}
-                  input={<Input name="attType" id="attType-helper" />}
-                >
-                  {/* <MenuItem value="">
-                    <em>Mean</em>
-                  </MenuItem> */}
-                  <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
-                  <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
-                  <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem>
-                  
-                  
-                </Select>
-                <FormHelperText>Select any Attribute</FormHelperText>
-              </FormControl>
-              
-    
-                 </form>
+      <FormControl className={classes.formControl}>
+        <InputLabel htmlFor="attType[i]-helper">{props.comparisonLabels.sensorList_Array[0].label}</InputLabel>
+        <Select
+          value={values.attType}
+          onChange={handleChange}
+          input={<Input name='attType' id="attType-helper" />}
+        >
+          {/* <MenuItem value="">
+            <em>Mean</em>
+          </MenuItem> */}
+          <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
+          <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
+          <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem>
+          
+          
+        </Select>
+        <FormHelperText>Select any Attribute</FormHelperText>
+      </FormControl>
+      
+
+         </form>
+
+
+                 
 
 
             <Chart options={state.options} series={state.series} type="bar" height="350" />
