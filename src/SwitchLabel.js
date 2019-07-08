@@ -4,7 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
 export default function SwitchLabel() {
-  const [state, setState] = React.useState({
+  const [labelstate, setlabelState] = React.useState({
     barGraph: true,
     lineGraph: false,
     heatMap:false,
@@ -12,7 +12,7 @@ export default function SwitchLabel() {
   });
 
   const handleChange = name => event => {
-    setState({ ...state, [name]: event.target.checked });
+    setlabelState({ ...labelstate, [name]: event.target.checked });
   };
 
   return (
@@ -26,7 +26,7 @@ export default function SwitchLabel() {
       <FormControlLabel
         control={
           <Switch
-            checked={state.barGraph}
+            checked={labelstate.barGraph}
             onChange={handleChange('barGraph')}
             value="barGraph"
             color="secondary"
@@ -37,7 +37,7 @@ export default function SwitchLabel() {
        <FormControlLabel
         control={
           <Switch
-            checked={state.lineGraph}
+            checked={labelstate.lineGraph}
             onChange={handleChange('lineGraph')}
             value="lineGraph"
             color="secondary"
@@ -48,7 +48,7 @@ export default function SwitchLabel() {
        <FormControlLabel
         control={
           <Switch
-            checked={state.heatMap}
+            checked={labelstate.heatMap}
             onChange={handleChange('heatMap')}
             value="heatMap"
             color="secondary"
@@ -59,7 +59,7 @@ export default function SwitchLabel() {
        <FormControlLabel
         control={
           <Switch
-            checked={state.scatterPlot}
+            checked={labelstate.scatterPlot}
             onChange={handleChange('scatterPlot')}
             value="scatterPlot"
             color="secondary"
