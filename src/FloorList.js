@@ -6,8 +6,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
-import { Button } from '@material-ui/core';
-import SensorList from './SensorList';
 import ZoneList from './ZoneList'
 
 const useStyles = makeStyles(theme => ({
@@ -18,13 +16,18 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3),
   },
 }));
-var ReceivedFloorObjects = [];
+
+var ReceivedFloorObjects = [];//This stores all the floor objects
+//recieved from parent component BuildingList as props
 
 export default function FloorList(props) {
   const classes = useStyles();
-  var floorCheckBoxList =[];
-  var zoneData = [];
-  console.log("floor props are  + " + JSON.stringify(props.floorData));
+  var floorCheckBoxList =[];//This stores names of floors to be 
+  //used while creating checkboxes for floors and also stores their
+  //state whether they are checked or not.
+
+  var zoneData = [];//This stores all the data of selected floors
+  //that has to be passed to it's child component ZoneList
   
   for(var i=0;i<props.floorData.length;i++)
   {
@@ -39,11 +42,12 @@ export default function FloorList(props) {
   });
 
   useEffect(() => {
+    //This modifies floorCheckBoxList and zoneData based on the
+    //buildings selected in it's parent component BuildingList
     var floorCheckBoxList =[];
     var zoneData = [];
     for (var i=0;i<props.floorData.length;i++)
     {
-      // console.log("hello")
       floorCheckBoxList[i] =  {floor: props.floorData[i].floor, checked: true};
       zoneData = zoneData.concat(props.floorData[i].zoneArray)
       ReceivedFloorObjects.push(props.floorData[i])
@@ -51,12 +55,12 @@ export default function FloorList(props) {
     setState({...state, floorList :floorCheckBoxList, zoneArray: zoneData})
   }, [props.floorData])
 
-
   const handleChange = name => event => {
-    // console.log(event.target.checked)
+    //This finds all the floor checkboxes that are selected 
+    //and based on this remove all zone checkboxes and sensor checkboxes
+    //that were inside those unchecked floors. And this will be passed 
+    //to ZoneList component
     state.floorList[name].checked = event.target.checked
-    
-  
     var checkedFloorZoneArray=[];
     for(var i=0;i<state.floorList.length;i++)
     {
@@ -66,23 +70,23 @@ export default function FloorList(props) {
       }
     }
     setState({floorList: state.floorList, zoneArray: checkedFloorZoneArray})
-    // console.log("after handling chagne, state is: " + JSON.stringify(state))
   };
-  
 
+  var FloorCheckBoxComponent=[];//This renders all the checkboxes related to floors
+  var currentBuilding='';//This is the current building name for which we are working on all of it's floors
+  var currentCampus='';//This is the current campus name for which we are working on all of it's building.
+  //Above two variables are used to combine checkboxes of same campus and building in one set
+  //And these building name and campus name will be displayed along with each set
 
-
-  var temp=[];
-  var currentBuilding='';
-  var currentCampus=''
   for(var i=0;i<state.floorList.length;i++)
   {
     if(props.floorData[i])
     {
       if(props.floorData[i].building == currentBuilding 
-        && props.floorData[i].campus ==currentCampus)
+        && props.floorData[i].campus ==currentCampus)//this check whether checkboxes will be in same set 
+        //or different one while rendering
       {
-        temp.push(
+        FloorCheckBoxComponent.push(
           <FormControlLabel
           control={<Checkbox checked={state.floorList[i].checked} onChange={handleChange(i)}  />}
           label={state.floorList[i].floor}
@@ -93,7 +97,7 @@ export default function FloorList(props) {
       {
         currentBuilding=props.floorData[i].building
         currentCampus = props.floorData[i].campus
-        temp.push(
+        FloorCheckBoxComponent.push(
           <div>
               <FormHelperText>{currentBuilding + ", " + currentCampus}</FormHelperText>
           <FormControlLabel
@@ -103,41 +107,24 @@ export default function FloorList(props) {
         </div>
         )
       }
-        // temp.push(
-        //   <FormControlLabel
-        //   control={<Checkbox checked={state.floorList[i].checked} onChange={handleChange(i)}  />}
-        //   label={state.floorList[i].floor}
-        // />
-        // )
     }
   }
- const onSubmit= event =>{
-      console.log("Button clicked")
-      console.log("floorlist and its state" + JSON.stringify(floorCheckBoxList))
-  }
-//   const error = [gilad, jason, antoine].filter(v => v).length !== 2;
 
   return (
       <div>
-          
         <div className={classes.root} style={{display: "inline-block",overflow: "auto",height:"250px"}}>
         <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Floor List</FormLabel>
             <FormGroup>
-            {temp}
-            
+              {FloorCheckBoxComponent}
             </FormGroup>
             <FormHelperText>Choose your Floor</FormHelperText>
         </FormControl>
-        
         </div>
+
         <div style={{display: "inline-block"}}>
             <ZoneList zoneData={state.zoneArray} label={props.label}></ZoneList>
         </div>
-        {/* <div>
-            <Button onClick={onSubmit}>Submit</Button>
-        </div> */}
-
     </div>
   );
 }

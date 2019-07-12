@@ -45,13 +45,51 @@ var seriesData =[];
   // }
 
    export default function HeatMap(props){
-    seriesData =[];
+   var seriesData =[];
+
+    
+   if (props.graphData.data_type == 'quantitative')
+   {
+    for(var k=0;k< props.graphData.length;k++)
+    {
+        seriesData.push({
+        name:props.comparisonLabels.sensorList_Array[k].label,
+        data: props.graphData[k].bar_data[0].values[0].mean
+        })
+
+
+
+    }
+}
+  else
+  {
+      for(var k=0;k< props.graphData.length;k++)
+      {
+          seriesData.push({
+          name:props.comparisonLabels.sensorList_Array[k].label,
+          data: props.graphData[k].bar_data[0].expected_values
+          })
+      }
+  }
+  
 
 console.log("the props in heatmap are" + JSON.stringify(props.graphData))
-    const [values, setValues] = React.useState({
-      statType: 'mean',
-      attType : '0'
-    });
+    
+
+
+seriesData =[];
+var quantType={}
+   if (props.graphData.data_type == 'quantitative')
+   {
+    quantType.statType='mean'
+    quantType.attType='0'
+    }
+
+  else
+  { 
+    quantType.attType='0'
+  }
+  const [values, setValues] = React.useState(quantType);
 
     const classes = useStyles();
 
@@ -65,23 +103,21 @@ console.log("the props in heatmap are" + JSON.stringify(props.graphData))
       // window.clientQuery.frequency = event.target.value
   
     }
-  
-    function handleChanger(event) {
-      setValues(oldValues => ({
-        ...oldValues,
-        [event.target.name]: event.target.value,
-      }));
-      console.log("The frequency is " + event.target.name)
-      console.log("The frequency is " + event.target.value)
-      // window.clientQuery.frequency = event.target.value
-  
-    }
+ 
 
 
 
     function generateData(sensor) {
       var i = 0;
       var series = [];
+      // console.log("line 85" + JSON.stringify(props.graphData.heat_map_data.data[0][sensor]))
+      // console.log("line 76"+ sensor)
+     
+      var quantType={}
+      if (props.graphData.data_type == 'quantitative')
+      {
+      
+        
       while (i < props.graphData.heat_map_data.data[0][sensor].mean.length) {
         var x = props.graphData.bar_data[0].labels[i];
         var y = props.graphData.heat_map_data.data[parseInt(values.attType)][sensor][values.statType][i];
@@ -93,22 +129,69 @@ console.log("the props in heatmap are" + JSON.stringify(props.graphData))
         });
         i++;
       }
-        console.log("the series for tttttttt" + sensor+ "is" + JSON.stringify(series));
+       }
+   
+     else
+     { 
+        
+      while (i < props.graphData.heat_map_data[0][0].length) {
+        var x = props.graphData.labels[i];
+        console.log("line 139" + JSON.stringify(props.graphData.heat_map_data[parseInt(values.attType)][sensor]))
+        var y = props.graphData.heat_map_data[parseInt(values.attType)][sensor][i];
+        
+        
+         series.push({
+          x: x,
+          y: y
+        });
+        i++;
+      }
+
+     }
+     
+     
+        
         return series;
       } 
 
 
 
-    for(var k=0;k<props.graphData.heat_map_data.sensorIds.length;k++)
-  {
-    seriesData.push(
+   
+      if (props.graphData.data_type == 'quantitative')
       {
-        name: 'Sensor '+ props.graphData.heat_map_data.sensorIds[k],
-          data: generateData(k)
-        
+        for(var k=0;k<props.graphData.heat_map_data.sensorIds.length;k++)
+        {
+          seriesData.push(
+            {
+              name: 'Sensor '+ props.graphData.heat_map_data.sensorIds[k],
+                data: generateData(k)
+              
+            }
+          )
+        }
+      
+       }
+   
+     else
+     { 
+      for(var k=0;k<props.graphData.sensorIds.length;k++)
+      {
+        seriesData.push(
+          {
+            name: 'Sensor '+ props.graphData.sensorIds[k],
+              data: generateData(k)
+            
+          }
+        )
       }
-    )
-  }
+     }
+   
+   
+   
+   
+   
+   
+     
 
 
 
@@ -130,14 +213,7 @@ console.log("the props in heatmap are" + JSON.stringify(props.graphData))
       },
       series: [
        
-        {
-          name: 'Sensor '+ props.graphData.heat_map_data.sensorIds[0],
-          data: generateData(0)
-        },
-        {
-          name:  'Sensor '+ props.graphData.heat_map_data.sensorIds[1],
-          data: generateData(1)
-        },
+       seriesData
         
       ],
     })
@@ -146,7 +222,9 @@ console.log("the props in heatmap are" + JSON.stringify(props.graphData))
 
     useEffect(()=>{
 seriesData=[];
-      for(var k=0;k<props.graphData.heat_map_data.sensorIds.length;k++)
+if (props.graphData.data_type == 'quantitative')
+{
+  for(var k=0;k<props.graphData.heat_map_data.sensorIds.length;k++)
   {
     seriesData.push(
       {
@@ -156,6 +234,23 @@ seriesData=[];
       }
     )
   }
+
+ }
+
+else
+{ 
+for(var k=0;k<props.graphData.sensorIds.length;k++)
+{
+  seriesData.push(
+    {
+      name: 'Sensor '+ props.graphData.sensorIds[k],
+        data: generateData(k)
+      
+    }
+  )
+}
+}
+
       setState({
         options: {
           enableShades:true,
@@ -180,49 +275,124 @@ seriesData=[];
 
 
 
-    },[values.attType])
+    },[values])
 
 
-    useEffect(()=>{
+   
 
-      seriesData=[];
-      for(var k=0;k<props.graphData.heat_map_data.sensorIds.length;k++)
+
+
+
+
+    var menuItemArray=[];
+
+
+
+    if (props.graphData.data_type == 'quantitative')
+   {
+    menuItemArray.push( 
+    <div>
+    <form className={classes.root} autoComplete="off">
+      
+    <FormControl className={classes.formControl}>
+      <InputLabel htmlFor="statType-helper">StatType</InputLabel>
+      <Select
+        value={values.statType}
+        onChange={handleChange}
+        input={<Input name="statType" id="statType-helper" />}
+      >
+        {/* <MenuItem value="">
+          <em>Mean</em>
+        </MenuItem> */}
+        <MenuItem value='mean'>Mean</MenuItem>
+        <MenuItem value='median'>Median</MenuItem>
+        <MenuItem value='max'>Maximum</MenuItem>
+        <MenuItem value='min'>Minimum</MenuItem>
+        <MenuItem value='variance'>Variance</MenuItem> 
+        <MenuItem value='stddev'>Stddev</MenuItem>
+
+        
+      </Select>
+      <FormHelperText>Select any Stat type</FormHelperText>
+    </FormControl>
+    
+
+       </form>
+
+
+       <form className={classes.root} autoComplete="off">
+
+    <FormControl className={classes.formControl}>
+      <InputLabel htmlFor="attType-helper">Attribute</InputLabel>
+      <Select
+        value={values.attType}
+        onChange={handleChange}
+        input={<Input name="attType" id="attType-helper" />}
+      >
+        {/* <MenuItem value="">
+          <em>Mean</em>
+        </MenuItem> */}
+         <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
+                <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
+                <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem>
+                
+        
+        
+      </Select>
+      <FormHelperText>Select any Attribute</FormHelperText>
+    </FormControl>
+    
+
+       </form>
+       </div>
+   )
+    }
+
+  else
   {
-    seriesData.push(
-      {
-        name: 'Sensor '+ props.graphData.heat_map_data.sensorIds[k],
-          data: generateData(k)
-        
-      }
-    )
+    menuItemArray.push( 
+    <div>
+    
+    
+
+    
+    <form className={classes.root} autoComplete="off">
+    <FormControl className={classes.formControl}>
+    <InputLabel htmlFor="statType-helper">StatType</InputLabel>
+      <Select
+        value={values.statType}
+        onChange={handleChange}
+        input={<Input name="statType" id="statType-helper" />}
+      >
+       
+        <MenuItem value='expected_values'>Expectedvalue</MenuItem>
+       
+
+      </Select>
+      <FormHelperText>Select any Stat type</FormHelperText>
+    </FormControl>
+    </form>
+
+
+    <form className={classes.root} autoComplete="off">
+    <FormControl className={classes.formControl}>
+    <InputLabel htmlFor="attType-helper">Attribute</InputLabel>
+      <Select
+        value={values.attType}
+        onChange={handleChange}
+        input={<Input name="attType" id="attType-helper" />}
+      >
+    <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
+    <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
+    </Select>
+    <FormHelperText>Select any Attribute</FormHelperText>
+    </FormControl>
+    </form>
+    
+       </div>
+   )
   }
-      setState({
-        options: {
-          enableShades:true,
-          shadeIntensity: 0.01,
-          
-          dataLabels: {
-            enabled: true
-          },
-          colors: ["#008FFB"],
-  
-           title: {
-            text: 'HeatMap Chart (Single color)'
-          }
-        },
-        series: seriesData,
-        
-
-
-
-
-      })
-
-
-
-
-    },[values.statType])
-
+    
    
    
    
@@ -233,60 +403,8 @@ seriesData=[];
 
         <div id="chart">
             
+        {menuItemArray}
 
-
-            <form className={classes.root} autoComplete="off">
-      
-      <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="statType-helper">StatType</InputLabel>
-        <Select
-          value={values.statType}
-          onChange={handleChange}
-          input={<Input name="statType" id="statType-helper" />}
-        >
-          {/* <MenuItem value="">
-            <em>Mean</em>
-          </MenuItem> */}
-          <MenuItem value='mean'>Mean</MenuItem>
-          <MenuItem value='median'>Median</MenuItem>
-          <MenuItem value='max'>Maximum</MenuItem>
-          <MenuItem value='min'>Minimum</MenuItem>
-          <MenuItem value='variance'>Variance</MenuItem> 
-          <MenuItem value='stddev'>Stddev</MenuItem>
-
-          
-        </Select>
-        <FormHelperText>Select any Stat type</FormHelperText>
-      </FormControl>
-      
-
-         </form>
-
-
-         <form className={classes.root} autoComplete="off">
-
-      <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="attType-helper">Attribute</InputLabel>
-        <Select
-          value={values.attType}
-          onChange={handleChanger}
-          input={<Input name="attType" id="attType-helper" />}
-        >
-          {/* <MenuItem value="">
-            <em>Mean</em>
-          </MenuItem> */}
-           <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
-                  <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
-                  <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem>
-                  
-          
-          
-        </Select>
-        <FormHelperText>Select any Attribute</FormHelperText>
-      </FormControl>
-      
-
-         </form>
          <Chart options={state.options} series={state.series} type="heatmap" height="350" />
        </div>
 

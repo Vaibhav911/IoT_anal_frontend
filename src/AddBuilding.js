@@ -12,12 +12,12 @@ import axios from 'axios'
 
 
 
-var suggestions = window.buildingLabels;
+var suggestions = window.buildingLabels;                      
 console.log('suggestion are ' + JSON.stringify(suggestions))
 
 
 function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+  const { classes, inputRef = () => {}, ref, ...other } = inputProps;  
 
   return (
     <TextField
@@ -36,7 +36,7 @@ function renderInputComponent(inputProps) {
   );
 }
 
-function renderSuggestion(suggestion, { query, isHighlighted }) {
+function renderSuggestion(suggestion, { query, isHighlighted }) {                                       
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
 
@@ -113,7 +113,7 @@ export default function AddBuilding() {
 
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
-  useEffect(() => {
+  useEffect(() => {                                                                    //a function to change the state of the textbox
       console.log('building labels changed' + JSON.stringify(window.buildingLabels))
   }, [window.buildingLabels])
 
@@ -132,7 +132,7 @@ export default function AddBuilding() {
     });
   };
 
-  const autosuggestProps = {
+  const autosuggestProps = {                                               //a variable to define the props of autosuggest
     renderInputComponent,
     suggestions: stateSuggestions,
     onSuggestionsFetchRequested: handleSuggestionsFetchRequested,

@@ -9,11 +9,34 @@ import { makeStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 
 // import Histogram from 'react-chart-histogram';
-
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 export default function Histogram (props){
+ var seriesData ={};
+if (props.graphData.data_type == 'quantitative')
+  { 
+    seriesData.name=props.graphData.histogram_data[0].labels[0]
+    seriesData.data =props.graphData.histogram_data[0].counts[0]
+  }
+else
+{
+  seriesData.name = props.graphData.histogram_data[0].labels
+  seriesData.data = props.graphData.histogram_data[0].values
+}
 
-
+const classes =useStyles();
     const[state,setState] = React.useState({
       options: {
         plotOptions: {
@@ -25,20 +48,106 @@ export default function Histogram (props){
           enabled: false
         },
         xaxis: {
-          categories: props.graphData.labels[0],
+          categories: seriesData.name,
         }
       },
       series: [{
-        data: props.graphData.counts[0]
+        data: seriesData.data
       }],
     })
-  
+console.log("iitial state is" + JSON.stringify(state))
+    const [values, setValues] = React.useState({
 
+      attType : '0'
+    });
+  
+    function handleChange(event) {
+      setValues(oldValues => ({
+        ...oldValues,
+        [event.target.name]: event.target.value,
+      }));
+      console.log("The frequency is " + event.target.name)
+      console.log("The frequency is " + event.target.value)
+      // window.clientQuery.frequency = event.target.value
+  
+    }
+
+    useEffect(()=>{
+       var seriesData ={};
+      console.log("index in line 89"+ parseInt(values.attType))
+      if (props.graphData.data_type == 'quantitative')
+      { 
+          seriesData.name=props.graphData.histogram_data[0].labels[parseInt(values.attType)]
+          seriesData.data =props.graphData.histogram_data[0].counts[parseInt(values.attType)]
+        }
+      else
+      {
+        seriesData.name = props.graphData.histogram_data[parseInt(values.attType)].labels
+        seriesData.data = props.graphData.histogram_data[parseInt(values.attType)].values
+      }
+
+      setState({
+        options: {
+          plotOptions: {
+            bar: {
+              horizontal: false,
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          xaxis: {
+            categories: seriesData.name
+          }
+        },
+        series: [{
+          data: seriesData.data
+        }],
+      })
+      // console.log("Line 84" + JSON.stringify(props.graphData.histogram_data[0].labels[parseInt(values.attType)])  )
+      // console.log("Line 84" + JSON.stringify(props.graphData.histogram_data[0].counts[parseInt(values.attType)])  )
+      // console.log("The state in line 88 is" + JSON.stringify(state))
+      },[values.attType])
+      
+     
+      
+      
+  // console.log("35" + JSON.stringify(props.graphData.histogram_data[0].counts[0][0]))
+  var menuItemArray=[];
+  for(var i=0;i<props.graphData.attributes.length;i++)
+  {
+    menuItemArray.push(<MenuItem value={JSON.stringify(i)}>{props.graphData.attributes[i].charAt(0).toUpperCase() + props.graphData.attributes[i].slice(1)}</MenuItem>)
+  }
   
     return (
       
 
       <div id="chart">
+
+<form className={classes.root} autoComplete="off">
+
+<FormControl className={classes.formControl}>
+  <InputLabel htmlFor="attType-helper">Attribute</InputLabel>
+  <Select
+    value={values.attType}
+    onChange={handleChange}
+    input={<Input name="attType" id="attType-helper" />}
+  >
+    {/* <MenuItem value="">
+      <em>Mean</em>
+    </MenuItem> */}
+     {/* <MenuItem value='0'>{props.graphData.attributes[0].charAt(0).toUpperCase() + props.graphData.attributes[0].slice(1)}</MenuItem>
+            <MenuItem value='1'>{props.graphData.attributes[1].charAt(0).toUpperCase() + props.graphData.attributes[1].slice(1)}</MenuItem>
+            <MenuItem value='2'>{props.graphData.attributes[2].charAt(0).toUpperCase() + props.graphData.attributes[2].slice(1)}</MenuItem> */}
+            {menuItemArray}
+    
+    
+  </Select>
+  <FormHelperText>Select any Attribute</FormHelperText>
+</FormControl>
+
+
+   </form>
         <ReactApexChart options={state.options} series={state.series} type="histogram" height="350" width ='40%'/>
       </div>
 

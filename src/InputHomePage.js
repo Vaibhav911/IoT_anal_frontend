@@ -26,6 +26,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 // import MenuIcon from '@material-ui/icons/Menu';
+import LinearProgress from '@material-ui/core/LinearProgress'
+
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 window.graphData ={}
@@ -52,8 +54,11 @@ function InputHomePage() {
     dataReceived: {},
     count : 0,
     graphData:{},
-    plotGraphs: false,
-    comparisonLabels: ''
+    
+    comparisonLabels: '',
+    possibleTransactionStatus : ['takeInput', 'loadingData', 'transactionFailed','plotGraph'],
+    transactionStatus: 'takeInput',
+    
   })
 
   useEffect(() =>
@@ -77,7 +82,7 @@ function InputHomePage() {
       alert("you have not selected freq")
     }
     console.log("value of myVar is " + JSON.stringify(window.clientQuery));
-
+    setState({...state, transactionStatus: state.possibleTransactionStatus[1]})
     
     
     
@@ -94,24 +99,32 @@ function InputHomePage() {
 // axios.post(link).then(response=>{
 //   // window.clientQuery = {sensorList_Array: [{sensorList: [], label:'',sensorType:''}], startTime: '', endTime: '', frequency: ''};
 // })
-axios({
-  method: 'post',
-  url: 'http://localhost:4000/getdata',
-  data: window.clientQuery
-})
-.catch(function (error) {
-  console.log(error);
-})
-.then(function (response) {
-  console.log("The value from backend is ")
-  console.log(JSON.stringify(response.data));
-  // window.graphData= response.data
-  setState({...state,graphData: response.data, plotGraphs : true, comparisonLabels :window.clientQuery})
-  // setState({...state,})
-});
+    function getGraphData()
+    {
+      axios({
+        method: 'post',
+        url: 'http://localhost:4000/getdata',
+        data: window.clientQuery
+      })
+      .catch(function (error) {
+        console.log(error);
+        setState({...state,transactionStatus:state.possibleTransactionStatus[2]})
+      })
+      .then(function (response) {
+        if(response.data.length==0 || response.data == 'error'){
+          setState({...state,transactionStatus:state.possibleTransactionStatus[2]})
+        }
+        else{
+        console.log("The value from backend is ")
+        console.log(JSON.stringify(response.data));
+        // window.graphData= response.data
+        setState({...state,graphData: response.data, transactionStatus:state.possibleTransactionStatus[3], comparisonLabels :window.clientQuery})
+        } // setState({...state,})
+      });
 
-
-console.log("Rchd at the end of handle submir")
+    }
+    getGraphData()
+    console.log("Rchd at the end of handle submir")
 
  }
 
@@ -128,48 +141,61 @@ console.log("Rchd at the end of handle submir")
   return (
     <div> 
 
-    {!state.plotGraphs ? 
+
+    {state.transactionStatus == state.possibleTransactionStatus[0] ? 
+
       <div >
-                 <AppBar position="static">
-    <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="Menu">
-            
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>{<img src={require('./senZopt-logo.png')} />}
-             Data Analytics 
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
+
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="Menu">    
+            </IconButton>
+            <Typography variant="h6" className={classes.title}>{<img src={require('./senZopt-logo.png')} />}
+              Data Analytics 
+            </Typography>
+            <Button color="inherit">Logout</Button>
+          </Toolbar>
+        </AppBar>
+
         <div>
-            {state.CampusData}
-          </div>
+          {state.CampusData}
+        </div>
 
-          <div>
-            <Button variant="contained" color="primary" onClick={handleAddInputBlock}>Add to compare</Button>
-          </div>
+        <div>
+          <Button variant="contained" color="primary" onClick={handleAddInputBlock}>Add to compare</Button>
+        </div>
 
-          <hr></hr>
+        <hr></hr>
 
-          <div style={{display: "flex"}}>
-            <StartTimePicker></StartTimePicker>
-          </div>
+        <div style={{display: "flex"}}>
+          <StartTimePicker></StartTimePicker>
+        </div>
 
-          <div style={{display: "flex"}}>
-            <EndTimePicker></EndTimePicker>
-          </div>
+        <div style={{display: "flex"}}>
+          <EndTimePicker></EndTimePicker>
+        </div>
 
-          <div style={{display: "flex"}}>
-            <SelectFrequency></SelectFrequency>
-          </div>
-          
-          <div>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-          </div>
+        <div style={{display: "flex"}}>
+          <SelectFrequency></SelectFrequency>
+        </div>
+        
+        <div>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+        </div>
       </div>
-    :
-    <Graphs graphData = {state.graphData} labels={state.comparisonLabels}/>
+    : 
+        state.transactionStatus == state.possibleTransactionStatus[1] ?
+        <div className={classes.root}>
+          <LinearProgress />
+          Loading your Data...
+        </div> : 
+          state.transactionStatus == state.possibleTransactionStatus[2] ?
+          <div>Problem in Loading Data. Refresh and try again .</div> :
+        <Graphs graphData = {state.graphData} labels={state.comparisonLabels}/>
+      
+      
     }
+
     </div>
   );
 }

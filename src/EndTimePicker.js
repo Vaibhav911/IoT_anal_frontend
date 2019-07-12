@@ -16,7 +16,6 @@ const useStyles = makeStyles({
 });
 
 export default function StartTimePicker() {
-  // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now()));
 
   const classes = useStyles();

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import GroupedBar from './GroupedBar'
 import HeatMap from './HeatMap'
+import HeatMaps from './Heatmaps'
+
 import LineChart from './LineChart'
 import Histogram from './Histogram'
 import PieChart from './PieChart'
@@ -29,6 +31,7 @@ import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
 import BarGraph from './BarGraph'
 import LineGraph from './LineGraph';
+import StackedBar from './StackedBar';
 
 
 function HideOnScroll(props) {
@@ -73,13 +76,13 @@ export default function Graphs(props){
     const [labelState, setlabelState] = React.useState({
       barGraph: true,
       lineGraph: false,
-      heatMap:false,
-      pieChartHistogram : false
+
+      pieChartHistogramHeatMap : false
 
     });
   
     const handleChange = name => event => {
-      setlabelState({ ...state, [name]: event.target.checked });
+      setlabelState({ ...labelState, [name]: event.target.checked });
     };
 
     const [state, setState] = React.useState({
@@ -109,17 +112,23 @@ console.log("Props in graphs is" + JSON.stringify(props))
       
 
 // })
-var pieChartHistogramArray=[];
-// for (var i=0;i< props.graphData.histogram_data.length;i++)
-// {
-//   pieChartHistogramArray.push
-//   (
-//     <div style={{borderWidth:'medium'}}>
-//       <PieChart graphData ={props.graphData.histogram_data[i]}/>
-//       <Histogram graphData ={props.graphData.histogram_data[i]} />
-//     </div>
-//   )
-// }
+var pieChartHistogramHeatMapArray=[];
+
+  for (var i=0;i< props.graphData.length;i++)
+{
+  pieChartHistogramHeatMapArray.push
+  (
+    <div style={{borderWidth:'medium', display: 'inline'}}>
+      <HeatMap graphData ={props.graphData[i]} />
+      <PieChart graphData ={props.graphData[i]}/>
+      <Histogram graphData ={props.graphData[i]} 
+      />
+    </div>
+  )
+
+}
+
+console.log(JSON.stringify(props.graphData[0])+"line 148")
 
 
 return(
@@ -172,27 +181,17 @@ return(
         }
         label="Line Graph"
       />
+
        <FormControlLabel
         control={
           <Switch
-            checked={labelState.heatMap}
-            onChange={handleChange('heatMap')}
-            value="heatMap"
+            checked={labelState.pieChartHistogramHeatMap}
+            onChange={handleChange('pieChartHistogramHeatMap')}
+            value="pieChartHistogramHeatMap"
             color="secondary"
           />
         }
-        label="Heat Map"
-      />
-       <FormControlLabel
-        control={
-          <Switch
-            checked={labelState.pieChartHistogram}
-            onChange={handleChange('pieChartHistogram')}
-            value="pieChartHistogram"
-            color="secondary"
-          />
-        }
-        label="Pie Chart and Histogram"
+        label="Pie Chart, Histogram and HeatMap"
       />
       {/* <FormControlLabel control={<Switch value="checkedC" />} label="Uncontrolled" /> */}
       {/* <FormControlLabel disabled control={<Switch value="checkedD" />} label="Disabled" />
@@ -209,10 +208,12 @@ return(
       </Container>
     </React.Fragment>
 
-        {labelState.barGraph ? <BarGraph barGraphData= {props.graphData} comparisonLabels ={props.labels}></BarGraph> : <div/>}
+        {labelState.barGraph ? (props.graphData[0].data_type == "quantitative" ? <BarGraph barGraphData= {props.graphData} comparisonLabels ={props.labels}></BarGraph> : <StackedBar barGraphData= {props.graphData }  comparisonLabels ={props.labels} /> ) : <div/>}
         {labelState.lineGraph ? <LineGraph lineGraphData= {props.graphData} comparisonLabels ={props.labels}></LineGraph> : <div></div>}
-    {labelState.heatMap ? <HeatMap graphData = {props.graphData} /> :<div></div> }
-        {labelState.pieChartHistogram ? pieChartHistogramArray : <div/>}
+        {/* <LineGraph lineGraphData= {props.graphData} comparisonLabels ={props.labels}></LineGraph> */}
+        {/* {labelState.heatMap ? <HeatMap graphData = {props.graphData} /> :<div></div> } */}
+        {labelState.pieChartHistogramHeatMap ? pieChartHistogramHeatMapArray : <div/>}
+        {/* {pieChartHistogramHeatMapArray} */}
     
         {/* <PieChart graphData ={props.graphData}/> */}
         {/* <AreaChart graphData ={props.graphData} />

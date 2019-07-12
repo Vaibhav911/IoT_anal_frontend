@@ -6,49 +6,43 @@ import parse from 'autosuggest-highlight/parse';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import Popper from '@material-ui/core/Popper';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios'
 import SensorDataType from './SensorDataType'
 import { Button } from '@material-ui/core';
 
 
-const suggestions = [
-];
+const suggestions = []; // a variable to hold all the suggestions related to campus names,
+// building names, floor names, zone names
 
 
 async function getLabels()
 {
+  //This fetches all the suggestion related to campus names, building names etc
+  //and push them to suggestions variable
   var link = "http://localhost:5000/getlabels";
   await axios.get(link).then(res => {
-    console.log('data receivede '+ JSON.stringify(res.data.locationLabels))
-    // suggestions= res.data.loctionLabels;a
     for(var i=0;i<res.data.locationLabels.length;i++)
     {
-      // if(res.data)
-      // suggestions.push(res.data.locationLabels[i])
-      console.log("Labels is" + JSON.stringify(res.data.locationLabels[i]))
       if (!res.data.locationLabels[i].label)
       {
-        console.log("label attribute is not there")
         continue;
       }
             suggestions.push(res.data.locationLabels[i])
-// 
     }
-
-    
   })
 }
 async function callGetLabels()
 {
-  await getLabels();
+  await getLabels(); 
 }
 
 callGetLabels();
-console.log('suggestions are '+ JSON.stringify(suggestions))
 
-function renderInputComponent(inputProps) {
+function renderInputComponent(inputProps) { 
+  //use to  render the input handle of all the textboxes,
+  //which are use to input the campus schema attributes like Campus names,
+  //building names etc...
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
 
   return (
@@ -68,7 +62,8 @@ function renderInputComponent(inputProps) {
   );
 }
 
-function renderSuggestion(suggestion, { query, isHighlighted }) {
+function renderSuggestion(suggestion, { query, isHighlighted }) { 
+  //use to render the suggestion texts for each and every textbox 
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
 
@@ -85,7 +80,9 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-function getSuggestions(value) {
+function getSuggestions(value) {  
+  //fetches the suggestions from the suggestions variable 
+  //based on the input string typed by the user inside the textbox
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
   let count = 0;
@@ -108,7 +105,8 @@ function getSuggestionValue(suggestion) {
   return suggestion.label;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({ 
+  //css for all the textboxes
   root: {
     height: 250,
     flexGrow: 1,
@@ -136,9 +134,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function AddSensor() {
+export default function AddSensor() { 
+  //this component renders all the input text boxes,
+  //along with a drop menu for selecting sensor data type
+  //eg. qualitative or quantitative.
+  //This also shows all the suggestions based on the 
+  //values entered by the user.
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [state, setState] = React.useState({
     campus: '',
     building:'',
@@ -163,16 +165,13 @@ export default function AddSensor() {
       ...state,
       [name]: newValue,
     });
-    console.log("You have typed to " + name+" value "+ newValue)
-
   };
   
   function handleSubmit()
   {
-    
-    // window.handleSubmit = 
-    console.log("Location Labels" + JSON.stringify(state))
-    console.log("Sensor Data Type :" + JSON.stringify(window.sensorDataType))
+    //This sends all the data entered by user
+    //to backend, which stores it in existing or 
+    //new campus document based on previous stored campus documents.
     var link = 'http://localhost:5000/storesensor?'
     +'campus='+state.campus
     +'&building='+state.building
@@ -181,9 +180,6 @@ export default function AddSensor() {
     +'&sensorId='+state.sensorId
     +'&sensorType='+state.sensorType
     +'&sensorDataType='+window.sensorDataType;
-
-    console.log('link is ' + link);
-
 
     axios.get(link).then(res => {
       console.log("res is " + JSON.stringify(res));
@@ -335,9 +331,10 @@ export default function AddSensor() {
       />
       <SensorDataType></SensorDataType>
       <div className={classes.divider} />
+
       <div>
            <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-        </div>
+      </div>
     </div>
   );
 }

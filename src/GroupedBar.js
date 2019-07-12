@@ -16,8 +16,9 @@ import Input from '@material-ui/core/Input';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: 'inline',
+    flexDirection: 'row',
+    height: '100px',
   },
   formControl: {
     margin: theme.spacing(1),
@@ -70,43 +71,42 @@ console.log("The props in grouped bar is"+ JSON.stringify(props.barGraphData[0].
       for (var i=0;i<statState.statType.length;i++)
       {
         statTypeComponent.push(
-        <div>
-        <form className={classes.root} autoComplete="off">
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="statType-helper">StatType</InputLabel>
-          <Select
-            value={statState.statType}
-            onChange={handleChange}
-            input={<Input name={JSON.stringify(i)+"statType"} id="statType-helper" />}
-          >
-            <MenuItem value='mean'>Mean</MenuItem>
-            <MenuItem value='median'>Median</MenuItem>
-            <MenuItem value='max'>Maximum</MenuItem>
-            <MenuItem value='min'>Minimum</MenuItem>
-            <MenuItem value='variance'>Variance</MenuItem> 
-            <MenuItem value='stddev'>Stddev</MenuItem>
-    
-          </Select>
-          <FormHelperText>Select any Stat type</FormHelperText>
-        </FormControl>
-        </form>
-    
-    
-        <form className={classes.root} autoComplete="off">
-        <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="attType[i]-helper">{props.comparisonLabels.sensorList_Array[0].label}</InputLabel>
-        <Select
-        value={statState.attType}
-        onChange={handleChange}
-        input={<Input name={JSON.stringify(i)+'attType'} id="attType-helper" />}
-        >
-        <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(0)}>{props.barGraphData[0].attributes[0].charAt(0).toUpperCase() + props.barGraphData[0].attributes[0].slice(1)}</MenuItem>
-        <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(1)}>{props.barGraphData[0].attributes[1].charAt(0).toUpperCase() + props.barGraphData[0].attributes[1].slice(1)}</MenuItem>
-        <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(2)}>{props.barGraphData[0].attributes[2].charAt(0).toUpperCase() + props.barGraphData[0].attributes[2].slice(1)}</MenuItem>
-        </Select>
-        <FormHelperText>Select any Attribute</FormHelperText>
-        </FormControl>
-        </form>
+        <div className={classes.root}>
+          <form className={classes.root} autoComplete="off">
+          <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="statType-helper">StatType</InputLabel>
+              <Select
+                value={statState.statType}
+                onChange={handleChange}
+                input={<Input name={JSON.stringify(i)+"statType"} id="statType-helper" />}
+              >
+              <MenuItem value='mean'>Mean</MenuItem>
+              <MenuItem value='median'>Median</MenuItem>
+              <MenuItem value='max'>Maximum</MenuItem>
+              <MenuItem value='min'>Minimum</MenuItem>
+              <MenuItem value='variance'>Variance</MenuItem> 
+              <MenuItem value='stddev'>Stddev</MenuItem>
+            </Select>
+            <FormHelperText>Select any Stat type</FormHelperText>
+          </FormControl>
+          </form>
+      
+      
+          <form className={classes.root} autoComplete="off">
+            <FormControl className={classes.formControl}>
+            <InputLabel htmlFor="attType[i]-helper">{props.comparisonLabels.sensorList_Array[0].label}</InputLabel>
+              <Select
+              value={statState.attType}
+              onChange={handleChange}
+              input={<Input name={JSON.stringify(i)+'attType'} id="attType-helper" />}
+              >
+                <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(0)}>{props.barGraphData[0].attributes[0].charAt(0).toUpperCase() + props.barGraphData[0].attributes[0].slice(1)}</MenuItem>
+                <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(1)}>{props.barGraphData[0].attributes[1].charAt(0).toUpperCase() + props.barGraphData[0].attributes[1].slice(1)}</MenuItem>
+                <MenuItem value={"set-" +JSON.stringify(i) + "att-" +JSON.stringify(2)}>{props.barGraphData[0].attributes[2].charAt(0).toUpperCase() + props.barGraphData[0].attributes[2].slice(1)}</MenuItem>
+              </Select>
+            <FormHelperText>Select any Attribute</FormHelperText>
+            </FormControl>
+          </form>
         </div>
         )
       }
@@ -125,7 +125,7 @@ console.log("The props in grouped bar is"+ JSON.stringify(props.barGraphData[0].
     for (var i=0;i<statState.statType.length;i++)
     {
       statTypeComponent.push(
-      <div>
+      <div >
       <form className={classes.root} autoComplete="off">
       <FormControl className={classes.formControl}>
         <InputLabel htmlFor="statType-helper">StatType</InputLabel>

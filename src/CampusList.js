@@ -6,13 +6,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
-// import { Button } from '@material-ui/core';
-// import SensorList from './SensorList';
-// import ZoneList from './ZoneList'
-// import FloorList from './FloorList'
 import BuildingList from './BuildingList'
-// import axios from 'axios';
-
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,19 +16,20 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3),
   },
 }));
-var ReceivedCampusObjects = [];
+
+var ReceivedCampusObjects = [];//This stores all the campus objects received
+//from InputHomePage
 
 export default function CampusList(props) {
   const classes = useStyles();
-  
 
-
-  var campusCheckBoxList =[];
-  var buildingData=[];
+  var campusCheckBoxList =[];//This stores names of campus to be 
+  //used while creating checkboxes for campuses and also their state
+  //wether they checked or not.
+  var buildingData=[];//This stores all the data of selected campuses
+  //that has to be passed to it's child component BuildingList
   
-  console.log("porps in campuslist " + JSON.stringify(props))
-  
-  for(var i=0;i<props.campusData.campusList.length;i++)//initialse cmapus checkbox list
+  for(var i=0;i<props.campusData.campusList.length;i++)
   {
     campusCheckBoxList[i] = {campus: props.campusData.campusList[i].campus, checked: true};
     buildingData = buildingData.concat(props.campusData.campusList[i].buildingArray)
@@ -44,54 +39,30 @@ export default function CampusList(props) {
    const [state, setState] = React.useState({
    campusList :campusCheckBoxList,
    buildingArray: buildingData
-
   });
-  
-
-  
-  // useEffect(() =>
-  // {
-  //     console.log("We are inside useEffect")
-      
-  //     axios.get("http://localhost:7000/getcampusdata").then(res=> {
-  //         console.log("the campus data:" + JSON.stringify(res.data.campusList))
-  //         for(var i=0;i<res.data.campusList.length;i++)
-  //         {
-  //           campusCheckBoxList[i] = {campus: res.data.campusList[i].campus, checked: true};
-  //           ReceivedCampusObjects.push(res.data.campusList[i])
-  //         }
-  //         setState({campusList: campusCheckBoxList, dataReceived : true})
-  //         console.log('in use effect function, received object list ' + JSON.stringify(ReceivedCampusObjects))
-  //         // console.log("iN afteruseEffect: the state" + JSON.stringify(temp))
-  //     })
-  //     console.log("data received lol" )
-      
-  // },[])
 
   const handleChange = name => event => {
-      console.log(event.target.checked)
+    //This finds all the campus checkboxes that are selected 
+    //and based on this remove all building checkboxes, floor checkboxes, 
+    //zone checkboxes and sensor checkboxes
+    //that were inside those unchecked campuses. And this will be passesd 
+    //to BuildingList component
       state.campusList[name].checked = event.target.checked
-      // setState({campusList: state.campusList, buildingArray: checkedCampusBuildingArray,dataReceived : true})
-
       var checkedCampusBuildingArray=[];
       for(var i=0;i<state.campusList.length;i++)
       {
         if (state.campusList[i].checked == true)
         {
-          // console.log("Adding buildings of "+state.campusList[i].campus)
           checkedCampusBuildingArray = checkedCampusBuildingArray.concat(ReceivedCampusObjects[i].buildingArray);
         }
       }
-      // console.log("The buildings added are "+JSON.stringify(checkedCampusBuildingArray))
-      
       setState({campusList: state.campusList, buildingArray: checkedCampusBuildingArray})
-      // console.log("after handling chagne, state.buildingarra is: " + JSON.stringify(state.buildingArray.length))
   };
 
   const { campusList } = state;
 
-  var campusFormList=[];
-  
+  var campusFormList=[];//This stores all the campus name checkboxes
+  //and renders them 
   for(var i=0;i<campusList.length;i++)
   {   
       campusFormList.push(
@@ -102,35 +73,23 @@ export default function CampusList(props) {
       )
   }
 
- const onSubmit= event =>{
+  return (
+    <div> 
+      <div className={classes.root} style={{display: "inline-block",overflow: "auto",height:"250px"}}>
+        <FormControl component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend" >Campus List</FormLabel>
+              <FormGroup>
+                {campusFormList}
+              </FormGroup>
+              <FormHelperText>Choose your Campus</FormHelperText>
+        </FormControl>
+      </div>
       
-  }
-//   const error = [gilad, jason, antoine].filter(v => v).length !== 2;
-
-
-
-
-console.log("Before return state is "+JSON.stringify(state.buildingArray.length))
-return (
-       <div> 
-    <div className={classes.root} style={{display: "inline-block",overflow: "auto",height:"250px"}}>
-      <FormControl component="fieldset" className={classes.formControl}>
-          <FormLabel component="legend" >Campus List</FormLabel>
-            <FormGroup>
-              {campusFormList}
-            </FormGroup>
-            <FormHelperText>Choose your Campus</FormHelperText>
-      </FormControl>
+      <div style={{display: "inline-block"}}>
+        <BuildingList buildingData={state.buildingArray} label={props.label}></BuildingList>
+      </div>
     </div>
-    
-    <div style={{display: "inline-block"}}>
-      <BuildingList buildingData={state.buildingArray} label={props.label}></BuildingList>
-    </div>
-
-  </div>
-);
-
-
+  );
 }
 
 

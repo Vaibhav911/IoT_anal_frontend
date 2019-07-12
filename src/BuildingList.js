@@ -6,9 +6,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
-import { Button } from '@material-ui/core';
-import SensorList from './SensorList';
-import ZoneList from './ZoneList'
 import FloorList from './FloorList'
 
 const useStyles = makeStyles(theme => ({
@@ -19,20 +16,21 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3),
   },
 }));
-var ReceivedBuildingObjects = [];
 
+var ReceivedBuildingObjects = [];//This stores all the building objects
+//recieved from parent component CampusList as props
 
 export default function BuildingList(props) {
-  // console.log("creating buildingist, prps is " + JSON.stringify(props))
   const classes = useStyles();
-  var buildingCheckBoxList =[];
-  var floorData = [];
+  var buildingCheckBoxList =[];//This stores names of building to be 
+  //used while creating checkboxes for buidlings and also stores their
+  //state wether they are checked or not.
 
-  // console.log("Before for loop, buildingData length is "+JSON.stringify(props.buildingData.length))
-  console.log("props buildingData length is "+props.buildingData.length)
+  var floorData = [];//This stores all the data of selected buildings
+  //that has to be passed to it's child component FloorList
+
   for (var i=0;i<props.buildingData.length;i++)
   {
-    // console.log("hello")
     buildingCheckBoxList[i] =  {building: props.buildingData[i].building, checked: true};
     floorData = floorData.concat(props.buildingData[i].floorArray)
     ReceivedBuildingObjects.push(props.buildingData[i])
@@ -43,53 +41,26 @@ export default function BuildingList(props) {
     floorArray: floorData
    });
 
-   console.log("state buildingList length is "+JSON.stringify(state.buildingList.length))
-  //  console.log("in building list, props is: "+JSON.stringify(state.buildingList))
-  
-// useEffect(() => {
-//   console.log('in use effect')
-//   if (props.buildingArray)
-//   {
-//     if (props.buildingArray.length != 0)
-//     {
-//       console.log('in buildilng list ' + JSON.stringify(props.buildingArray[0].building))
-//       for(var i=0;i<props.buildingArray.length;i++)
-//       {
-//           buildingList.push(
-//               {
-//                   building:props.buildingArray[i].building,
-//                   checked:true
-//               }
-//           )
-//       }
-//       setState({buildingCheckBoxList: buildingList})
-//       console.log('after setting all building ' + JSON.stringify(buildingList))
-//     }
-//   }
-// },[props.buildingArray])
-
 useEffect(() => {
+  //This modifies buildingCheckBoxList and floorData based on the
+  //campuses selected in it's parent component CampustList
   var buildingCheckBoxList =[];
   var floorData = [];
   for (var i=0;i<props.buildingData.length;i++)
   {
-    // console.log("hello")
     buildingCheckBoxList[i] =  {building: props.buildingData[i].building, checked: true};
     floorData = floorData.concat(props.buildingData[i].floorArray)
     ReceivedBuildingObjects.push(props.buildingData[i])
   }
-  console.log('')
   setState({...state, buildingList :buildingCheckBoxList, floorArray: floorData})
 }, [props.buildingData])
 
-
-
-
 const handleChange = name => event => {
-  // console.log(event.target.checked)
+  //This finds all the building checkboxes that are selected 
+  //and based on this remove all floor checkboxes, zone checkboxes and sensor checkboxes
+  //that were inside those unchecked buildings. And this will be passesd 
+  //to FloorList component
   state.buildingList[name].checked = event.target.checked
-  
-
   var checkedBuildingFloorArray=[];
   for(var i=0;i<state.buildingList.length;i++)
   {
@@ -99,20 +70,21 @@ const handleChange = name => event => {
     }
   }
   setState({buildingList: state.buildingList, floorArray: checkedBuildingFloorArray})
-  // console.log("after handling chagne, state is: " + JSON.stringify(state))
 };
 
 
-  var temp=[];
-  var currentCampus=""
+  var buildingCheckboxComponent=[];//This renders all the checkboxes related to buildings
+  var currentCampus="";//This is the current campus name for which we are working on all of it's buildings
+  //This variable helps in combining all the buildings that are in one campus to one set
+  //And campus name will be displayed along with each set
   for(var i=0;i<state.buildingList.length;i++)
   {
-      console.log("Building name is "+JSON.stringify(state.buildingList[i].building))
      if(props.buildingData[i])
      {
-      if(props.buildingData[i].campus == currentCampus)
+      if(props.buildingData[i].campus == currentCampus)//this check wether checkboxes will be in same set 
+      //or different one while rendering
       {
-        temp.push(
+        buildingCheckboxComponent.push(
           <FormControlLabel
           control={<Checkbox checked={state.buildingList[i].checked} onChange={handleChange(i)}  />}
           label={state.buildingList[i].building}
@@ -122,7 +94,7 @@ const handleChange = name => event => {
       else
       {
         currentCampus=props.buildingData[i].campus
-        temp.push(
+        buildingCheckboxComponent.push(
           <div>
               <FormHelperText>{currentCampus}</FormHelperText>
           <FormControlLabel
@@ -131,44 +103,24 @@ const handleChange = name => event => {
         />
         </div>
         )
-       
       }
     }
-
-      // temp.push(
-      //   <FormControlLabel
-      //   control={<Checkbox checked={state.buildingList[i].checked} onChange={handleChange(i)}  />}
-      //   label={state.buildingList[i].building}
-      // />
-      // )
   }
- const onSubmit= event =>{
-      console.log("Button clicked")
-      console.log("buildinglist and its state" + JSON.stringify(state.floorArray))
-  }
-//   const error = [gilad, jason, antoine].filter(v => v).length !== 2;
 
   return (
       <div>
-          
         <div className={classes.root} style={{display: "inline-block",overflow: "auto",height:"250px"}}>
         <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Building List</FormLabel>
             <FormGroup>
-            {temp}
-            
+            {buildingCheckboxComponent}
             </FormGroup>
-            
         </FormControl>
-        
         </div>
+
         <div style={{display: "inline-block"}}>
             <FloorList floorData={state.floorArray} label={props.label}></FloorList>
         </div>
-        {/* <div>
-            <Button onClick={onSubmit}>Submit</Button>
-        </div> */}
-
     </div>
   );
 }

@@ -44,19 +44,19 @@ var statMenuItem =[];
 
     }
 }
-else
-{
-    for(var k=0;k< props.lineGraphData.length;k++)
-    {
-        seriesData.push({
-        name:props.comparisonLabels.sensorList_Array[k].label,
-        data: props.lineGraphData[k].bar_data[0].percentage
-        })
-    }
-}
+  else
+  {
+      for(var k=0;k< props.lineGraphData.length;k++)
+      {
+          seriesData.push({
+          name:props.comparisonLabels.sensorList_Array[k].label,
+          data: props.lineGraphData[k].bar_data[0].expected_values
+          })
+      }
+  }
   
 
-//    console.log("BarGraph props are "+JSON.stringify(props.graphData[0].bar_data[0]))
+   console.log("BarGraph props are 55"+JSON.stringify(seriesData))
 
    const [state, setState] = React.useState({
     options: {
@@ -96,7 +96,7 @@ else
            size: 6
         },
         xaxis: {
-          categories: props.lineGraphData[0].bar_data[0].labels,
+          categories: props.lineGraphData[0].data_type=="quantitative" ? props.lineGraphData[0].bar_data[0].labels : props.lineGraphData[0].labels,
           title: {
             text: 'Month'
           }
@@ -142,7 +142,7 @@ else
         
         var statType = 'statType' + JSON.stringify(i)
         var attribute = 'attribute' + JSON.stringify(i)
-        selectStatType[statType] = 'percentage'
+        selectStatType[statType] = 'expected_values'
         selectStatType[attribute] = props.lineGraphData[i].attributes[0]
     }
 }
@@ -233,9 +233,8 @@ else
         onChange={handleChange}
         input={<Input name={"statType"+JSON.stringify(i)} id={"statType-helper" + JSON.stringify(i)}/>}
       >
-        <MenuItem value='percentage'>Percentage</MenuItem>
-        <MenuItem value='nonpercentage'>Non Percentage</MenuItem>
-        <MenuItem value='expectedval'>expectedval</MenuItem>
+       
+        <MenuItem value='expected_values'>Expectedvalue</MenuItem>
        
 
       </Select>
@@ -258,7 +257,6 @@ else
     <FormHelperText>Select any Attribute</FormHelperText>
     </FormControl>
     </form>
-    <Chart options={state.options} series={state.series} type="bar" height="350" />
     </div>
     )
   }
@@ -277,6 +275,9 @@ else
   useEffect(()=>{
     seriesData=[];
     console.log("The state in line 197 is"+ JSON.stringify(statState))
+   
+    if (props.lineGraphData[0].data_type == 'quantitative')
+   {
     for(var k=0;k< props.lineGraphData.length;k++)
     {
         var statType = statState['statType' + JSON.stringify(k)]
@@ -296,8 +297,34 @@ else
         data: props.lineGraphData[k].bar_data[0].values[attributeIndex][statType]
       })
     }
+}
+else
+{
+    for(var k=0;k< props.lineGraphData.length;k++)
+    {
+        var statType = statState['statType' + JSON.stringify(k)]
+        var attribute = statState['attribute' + JSON.stringify(k)]
+        console.log('line 202' + ' ' + statType + ' ' + attribute)
+        var attributeIndex = 0
+        for (var i=0;i<props.lineGraphData[k].attributes.length ;i++)
+        {
+            if(attribute == props.lineGraphData[k].attributes[i])
+            {
+                attributeIndex=i
+                break;
+            }
+        }
+        console.log('attribute index 317 is' + attributeIndex)
+      seriesData.push({
+        name:props.comparisonLabels.sensorList_Array[k].label,
+        data: props.lineGraphData[k].bar_data[attributeIndex].expected_values
+      })
+    }
+}
+
+   
     
-  
+  console.log("nnnn" + JSON.stringify(seriesData))
   
 
     setState({
@@ -338,7 +365,7 @@ else
                size: 6
             },
             xaxis: {
-              categories: props.lineGraphData[0].bar_data[0].labels,
+              categories: props.lineGraphData[0].data_type=="quantitative" ? props.lineGraphData[0].bar_data[0].labels : props.lineGraphData[0].labels,
               title: {
                 text: 'Month'
               }
@@ -374,7 +401,7 @@ else
          <div id="chart">
              {statTypeComponent}
             
-
+{props.lineGraphData[0].data_type == 'qualitative' ? <div>{JSON.stringify(props.lineGraphData[0].bar_data[0].enumeration)}</div> : <div></div>}
 
              <Chart options={state.options} series={state.series} type="line" height="500" />
         </div>
