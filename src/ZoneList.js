@@ -6,7 +6,6 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
-import { Button } from '@material-ui/core';
 import SensorList from './SensorList';
 
 const useStyles = makeStyles(theme => ({

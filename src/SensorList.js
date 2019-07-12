@@ -15,11 +15,14 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3),
   },
 }));
-var ReceivedSensorObjects = [];
+var ReceivedSensorObjects = []; //This stores all the sensor objects
+//recieved as props from parent component ZoneList 
 
 export default function SensorList(props) {
   const classes = useStyles();
-  var sensorCheckBoxList = [];
+  var sensorCheckBoxList = [];//This stores names of sensors to be 
+  //used while creating checkboxes for sensors and also stores their
+  //state whether they are checked or not.
 
   for(var i=0;i<props.sensorData.length;i++)
   {
@@ -31,15 +34,13 @@ export default function SensorList(props) {
    });
 
    useEffect(() => {
-    console.log("My Index is" +  props.label)
-
+     //This modifies sensorCheckBoxList  based on the
+    //Zones selected in it's parent component ZoneList
     var sensorCheckBoxList =[];
     for (var i=0;i<props.sensorData.length;i++)
     {
       sensorCheckBoxList[i] =  {sensor: props.sensorData[i].sensorId, checked: true};
     }
-
-    
     setState({...state, sensorList :sensorCheckBoxList})
 
     var checkedSensorLables = [];
@@ -55,21 +56,12 @@ export default function SensorList(props) {
   }, [props.sensorData]);
 
   const handleChange = name => event => {
-
-    // state.sensorList[name].checked = event.target.checked;
-    var sensorList = state.sensorList;
+       //This finds all the sensor checkboxes that are selected
+       //and initialises the clientQuery global variable.
+   var sensorList = state.sensorList;
     sensorList[name].checked = event.target.checked;
     setState({ ...state, sensorList: sensorList });
-    // var checkedSensorArray=[];
-    // for(var i=0;i<state.sensorList.length;i++)
-    // {
-    //   if (state.sensorList[i].checked == true)
-    //   {
-    //     checkedZoneSensorArray = checkedZoneSensorArray.concat(ReceivedZoneObjects[i].sensorArray);
-    //   }
-    // }
-    // setState({zoneList: state.zoneList, sensorArray: checkedZoneSensorArray})
-    // console.log("after handling chagne, state is: " + JSON.stringify(state))
+
     var checkedSensorLables = [];
     for (var i=0;i<state.sensorList.length;i++)
     {
@@ -80,16 +72,14 @@ export default function SensorList(props) {
     }
     window.clientQuery.sensorList_Array[props.label].sensorList = checkedSensorLables;
 
-
-    // console.log('value of myVar is ' + window.myVar)
   };
-  // const { sensorCheckBoxList } = state;
 
-  var temp=[];
-  var currentZone='';
-  var currentFloor='';
-  var currentBuilding='';
-  var currentCampus ='';
+
+  var SensorCheckBoxComponent=[];//This renders all the checkboxes related to sensors
+  var currentZone='';//This is the current zone name for which we are working on all of it's sensors
+  var currentFloor='';//This is the current floor name for which we are working on all of it's zones
+  var currentBuilding='';//This is the current building name for which we are working on all of it's floors
+  var currentCampus ='';//This is the current campus name for which we are working on all of it's buildings
   for(var i=0;i<state.sensorList.length;i++)
   {
     if(props.sensorData[i])
@@ -97,10 +87,11 @@ export default function SensorList(props) {
       if(props.sensorData[i].zone == currentZone
         && props.sensorData[i].floor == currentFloor
         && props.sensorData[i].building == currentBuilding
-        && props.sensorData[i].campus == currentCampus )
+        && props.sensorData[i].campus == currentCampus )//this checks whether checkboxes will be in same set 
+        //or different one while rendering
        
       {
-        temp.push(
+        SensorCheckBoxComponent.push(
           <FormControlLabel
           control={<Checkbox checked={state.sensorList[i].checked} color='primary' onChange={handleChange(i)}  />}
           label={state.sensorList[i].sensor + "-" + props.sensorData[i].type}
@@ -114,7 +105,7 @@ export default function SensorList(props) {
         currentBuilding=props.sensorData[i].building;
         currentCampus=props.sensorData[i].campus;
         
-        temp.push(
+        SensorCheckBoxComponent.push(
           <div>
               <FormHelperText>{currentZone + ",Floor " + currentFloor+ ", "+currentBuilding + ", " + currentCampus}</FormHelperText>
           <FormControlLabel
@@ -124,35 +115,22 @@ export default function SensorList(props) {
         </div>
         )
       }
-        // temp.push(
-        //   <FormControlLabel
-        //   control={<Checkbox checked={state.floorList[i].checked} onChange={handleChange(i)}  />}
-        //   label={state.floorList[i].floor}
-        // />
-        // )
     }
   }
-//  const onSubmit= event =>{
-//       console.log("Button clicked")
-//       console.log("sensorlist and its state" + JSON.stringify(sensorCheckBoxList))
-//   }
-//   const error = [gilad, jason, antoine].filter(v => v).length !== 2;
 
   return (
       <div>
+        
         <div className={classes.root} style={{display: "inline-block", overflow: "auto",height:"250px"}}>
         <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Sensor List</FormLabel>
             <FormGroup >
-            {temp}
-            
+            {SensorCheckBoxComponent}
             </FormGroup>
             <FormHelperText>Choose Sensor</FormHelperText>
         </FormControl>
         </div>
-        {/* <div style={{display: "inline-block"}}>
-            <Button onClick={onSubmit}>Submit</Button>
-        </div> */}
+
     </div>
   );
 }
