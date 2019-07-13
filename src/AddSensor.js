@@ -1,45 +1,39 @@
-import React from 'react';
-import deburr from 'lodash/deburr';
-import Autosuggest from 'react-autosuggest';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-import axios from 'axios'
-import SensorDataType from './SensorDataType'
-import { Button } from '@material-ui/core';
-
+import React from "react";
+import deburr from "lodash/deburr";
+import Autosuggest from "react-autosuggest";
+import match from "autosuggest-highlight/match";
+import parse from "autosuggest-highlight/parse";
+import TextField from "@material-ui/core/TextField";
+import Paper from "@material-ui/core/Paper";
+import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import SensorDataType from "./SensorDataType";
+import { Button } from "@material-ui/core";
 
 const suggestions = []; // a variable to hold all the suggestions related to campus names,
 // building names, floor names, zone names
 
-
-async function getLabels()
-{
+async function getLabels() {
   //This fetches all the suggestion related to campus names, building names etc
   //and push them to suggestions variable
   var link = "http://localhost:5000/getlabels";
   await axios.get(link).then(res => {
-    for(var i=0;i<res.data.locationLabels.length;i++)
-    {
-      if (!res.data.locationLabels[i].label)
-      {
+    for (var i = 0; i < res.data.locationLabels.length; i++) {
+      if (!res.data.locationLabels[i].label) {
         continue;
       }
-            suggestions.push(res.data.locationLabels[i])
+      suggestions.push(res.data.locationLabels[i]);
     }
-  })
+  });
 }
-async function callGetLabels()
-{
-  await getLabels(); 
+async function callGetLabels() {
+  await getLabels();
 }
 
 callGetLabels();
 
-function renderInputComponent(inputProps) { 
+function renderInputComponent(inputProps) {
   //use to  render the input handle of all the textboxes,
   //which are use to input the campus schema attributes like Campus names,
   //building names etc...
@@ -54,16 +48,16 @@ function renderInputComponent(inputProps) {
           inputRef(node);
         },
         classes: {
-          input: classes.input,
-        },
+          input: classes.input
+        }
       }}
       {...other}
     />
   );
 }
 
-function renderSuggestion(suggestion, { query, isHighlighted }) { 
-  //use to render the suggestion texts for each and every textbox 
+function renderSuggestion(suggestion, { query, isHighlighted }) {
+  //use to render the suggestion texts for each and every textbox
   const matches = match(suggestion.label, query);
   const parts = parse(suggestion.label, matches);
 
@@ -71,7 +65,10 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
     <MenuItem selected={isHighlighted} component="div">
       <div>
         {parts.map(part => (
-          <span key={part.text} style={{ fontWeight: part.highlight ? 500 : 400 }}>
+          <span
+            key={part.text}
+            style={{ fontWeight: part.highlight ? 500 : 400 }}
+          >
             {part.text}
           </span>
         ))}
@@ -80,8 +77,8 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-function getSuggestions(value) {  
-  //fetches the suggestions from the suggestions variable 
+function getSuggestions(value) {
+  //fetches the suggestions from the suggestions variable
   //based on the input string typed by the user inside the textbox
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
@@ -91,7 +88,8 @@ function getSuggestions(value) {
     ? []
     : suggestions.filter(suggestion => {
         const keep =
-          count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+          count < 5 &&
+          suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
         if (keep) {
           count += 1;
@@ -105,49 +103,49 @@ function getSuggestionValue(suggestion) {
   return suggestion.label;
 }
 
-const useStyles = makeStyles(theme => ({ 
+const useStyles = makeStyles(theme => ({
   //css for all the textboxes
   root: {
     height: 250,
-    flexGrow: 1,
+    flexGrow: 1
   },
   container: {
-    position: 'relative',
+    position: "relative"
   },
   suggestionsContainerOpen: {
-    position: 'absolute',
+    position: "absolute",
     zIndex: 1,
     marginTop: theme.spacing(1),
     left: 0,
-    right: 0,
+    right: 0
   },
   suggestion: {
-    display: 'block',
+    display: "block"
   },
   suggestionsList: {
     margin: 0,
     padding: 0,
-    listStyleType: 'none',
+    listStyleType: "none"
   },
   divider: {
-    height: theme.spacing(2),
-  },
+    height: theme.spacing(2)
+  }
 }));
 
-export default function AddSensor() { 
+export default function AddSensor() {
   //this component renders all the input text boxes,
   //along with a drop menu for selecting sensor data type
   //eg. qualitative or quantitative.
-  //This also shows all the suggestions based on the 
+  //This also shows all the suggestions based on the
   //values entered by the user.
   const classes = useStyles();
   const [state, setState] = React.useState({
-    campus: '',
-    building:'',
-    floor:'',
-    zone:'',
-    sensorType:'',
-    sensorId:''
+    campus: "",
+    building: "",
+    floor: "",
+    zone: "",
+    sensorType: "",
+    sensorId: ""
   });
 
   const [stateSuggestions, setSuggestions] = React.useState([]);
@@ -163,23 +161,30 @@ export default function AddSensor() {
   const handleChange = name => (event, { newValue }) => {
     setState({
       ...state,
-      [name]: newValue,
+      [name]: newValue
     });
   };
-  
-  function handleSubmit()
-  {
+
+  function handleSubmit() {
     //This sends all the data entered by user
-    //to backend, which stores it in existing or 
+    //to backend, which stores it in existing or
     //new campus document based on previous stored campus documents.
-    var link = 'http://localhost:5000/storesensor?'
-    +'campus='+state.campus
-    +'&building='+state.building
-    +'&floor='+state.floor
-    +'&zone='+state.zone
-    +'&sensorId='+state.sensorId
-    +'&sensorType='+state.sensorType
-    +'&sensorDataType='+window.sensorDataType;
+    var link =
+      "http://localhost:5000/storesensor?" +
+      "campus=" +
+      state.campus +
+      "&building=" +
+      state.building +
+      "&floor=" +
+      state.floor +
+      "&zone=" +
+      state.zone +
+      "&sensorId=" +
+      state.sensorId +
+      "&sensorType=" +
+      state.sensorType +
+      "&sensorDataType=" +
+      window.sensorDataType;
 
     axios.get(link).then(res => {
       console.log("res is " + JSON.stringify(res));
@@ -192,7 +197,7 @@ export default function AddSensor() {
     onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
     onSuggestionsClearRequested: handleSuggestionsClearRequested,
     getSuggestionValue,
-    renderSuggestion,
+    renderSuggestion
   };
 
   return (
@@ -201,17 +206,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'campus',
-          placeholder: 'Search a campus',
+          id: "react-autosuggest-simple",
+          label: "campus",
+          placeholder: "Search a campus",
           value: state.campus,
-          onChange: handleChange('campus'),
+          onChange: handleChange("campus")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -223,17 +228,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'Building',
-          placeholder: 'Search a Building',
+          id: "react-autosuggest-simple",
+          label: "Building",
+          placeholder: "Search a Building",
           value: state.building,
-          onChange: handleChange('building'),
+          onChange: handleChange("building")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -245,17 +250,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'Floor',
-          placeholder: 'Search a Floor',
+          id: "react-autosuggest-simple",
+          label: "Floor",
+          placeholder: "Search a Floor",
           value: state.floor,
-          onChange: handleChange('floor'),
+          onChange: handleChange("floor")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -267,17 +272,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'Zone',
-          placeholder: 'Search a Zone',
+          id: "react-autosuggest-simple",
+          label: "Zone",
+          placeholder: "Search a Zone",
           value: state.zone,
-          onChange: handleChange('zone'),
+          onChange: handleChange("zone")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -289,17 +294,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'Sensor Type',
-          placeholder: 'Search a Sensor Type',
+          id: "react-autosuggest-simple",
+          label: "Sensor Type",
+          placeholder: "Search a Sensor Type",
           value: state.sensorType,
-          onChange: handleChange('sensorType'),
+          onChange: handleChange("sensorType")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -311,17 +316,17 @@ export default function AddSensor() {
         {...autosuggestProps}
         inputProps={{
           classes,
-          id: 'react-autosuggest-simple',
-          label: 'Sensor ID',
-          placeholder: 'Search a Sensor ID',
+          id: "react-autosuggest-simple",
+          label: "Sensor ID",
+          placeholder: "Search a Sensor ID",
           value: state.sensorId,
-          onChange: handleChange('sensorId'),
+          onChange: handleChange("sensorId")
         }}
         theme={{
           container: classes.container,
           suggestionsContainerOpen: classes.suggestionsContainerOpen,
           suggestionsList: classes.suggestionsList,
-          suggestion: classes.suggestion,
+          suggestion: classes.suggestion
         }}
         renderSuggestionsContainer={options => (
           <Paper {...options.containerProps} square>
@@ -329,11 +334,13 @@ export default function AddSensor() {
           </Paper>
         )}
       />
-      <SensorDataType></SensorDataType>
+      <SensorDataType />
       <div className={classes.divider} />
 
       <div>
-           <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          Submit
+        </Button>
       </div>
     </div>
   );

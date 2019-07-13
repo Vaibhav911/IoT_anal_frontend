@@ -1,49 +1,50 @@
-import React from 'react';
-import './App.css';
-import InputHomePage from './InputHomePage'
+import React from "react";
+import "./App.css";
+import InputHomePage from "./InputHomePage";
 import { Route, BrowserRouter } from "react-router-dom";
-import AddSensor from './AddSensor'
+import AddSensor from "./AddSensor";
 
-
-window.clientQuery = {sensorList_Array: [{sensorList: [], label:'',sensorType:''}], startTime: '', endTime: '', frequency: ''}; 
-//the global variable which stores all the parameters the user has input in the InputHomePage component. 
-// This is declared globally because we have to use this data back in the component InputHomePage which render the
-// successive child component CampusList component for whom data is sent as props. To get this data back from all the child components
-//global variable is very convinient to use
-
-
-
-
+window.clientQuery = {
+  //the global variable which stores all the parameters
+  //the user has input in the InputHomePage component.
+  //This is declared globally because
+  //we have to use this data back in the component InputHomePage
+  //which render the successive child component CampusList component
+  //for whom data is sent as props. To get this data back from all the child components
+  // global variable is very convinient to use.
+  sensorList_Array: [{ sensorList: [], label: "", sensorType: "" }],
+  startTime: "",
+  endTime: "",
+  frequency: ""
+};
 
 function App() {
   return (
-    <div >
+    <div>
       <BrowserRouter>
-          <div>
-            <Route
-              exact={true}
-              path="/"
-              render={() => (
-                <div>
-                  <InputHomePage/>
-                </div>
-              )}
-            />
-            <Route
-                exact={true}
-                path="/addsensor"
-                render={() => (
-                  <div>
-                    <AddSensor/>
-                  </div>
-                )}
-            />
+        <div>
+          <Route
+            exact={true}
+            path="/"
+            render={() => (
+              <div>
+                <InputHomePage />
+              </div>
+            )}
+          />
+          <Route
+            exact={true}
+            path="/addsensor"
+            render={() => (
+              <div>
+                <AddSensor />
+              </div>
+            )}
+          />
         </div>
       </BrowserRouter>
-  </div>
+    </div>
   );
 }
 
 export default App;
-
-
