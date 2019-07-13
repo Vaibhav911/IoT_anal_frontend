@@ -15,9 +15,9 @@ const useStyles = makeStyles({
   }
 });
 
-export default function StartTimePicker() {
-  // The first commit of Material-UI
-  const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now()));
+export default function StartTimePicker() {//this fucntion is used to render time picker and initialise the 
+  // global variable clientQuery with its endTime attribute. Refer Material UI for more info.
+  const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now())); 
 
   window.clientQuery.startTime = selectedDate;
 

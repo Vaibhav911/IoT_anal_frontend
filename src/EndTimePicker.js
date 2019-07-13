@@ -1,3 +1,5 @@
+//Code taken directly from Material_Ui . 
+// Refer its webiste for complete API and documentation of this feature
 import "date-fns";
 import React from "react";
 import Grid from "@material-ui/core/Grid";
@@ -15,7 +17,8 @@ const useStyles = makeStyles({
   }
 });
 
-export default function StartTimePicker() {
+export default function StartTimePicker() {//this fucntion is used to render time picker and initialise the 
+  // global variable clientQuery with its endTime attribute. Refer Material UI for more info.
   const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now()));
 
   const classes = useStyles();

@@ -1,3 +1,6 @@
+//This component hasn't been used anywhere. 
+//Its here for Demonstration purposes only, 
+//to show how we made our APP Bar for frontend pages
 import React from "react";
 import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";

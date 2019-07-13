@@ -1,7 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
@@ -24,19 +22,18 @@ const useStyles = makeStyles(theme => ({
 
 
 
-export default function InputLabelTextField(props) {
+export default function InputLabelTextField(props) {//a function to render textfield for each Label
+  //of the InputHomePage component and then intialise the gloabl variable clientQuery.sensorListArray with
+  // these labels 
   const classes = useStyles();
   const [values, setValues] = React.useState({
     name: '',
     
   });
-console.log("my lavbel is" +  props.label)
 
   const handleChange = name => event => {
-    console.log("you have entered" + event.target.value)
     setValues({ ...values, [name]: event.target.value });
-
-    window.clientQuery.sensorList_Array[props.label].label=event.target.value
+    window.clientQuery.sensorList_Array[props.label].label=event.target.value // the initialisation
   };
 
   return (
